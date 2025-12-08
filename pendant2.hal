@@ -1,0 +1,67 @@
+# --- Load mux4 components ---
+loadrt mux4 count=3
+
+# --- Add to servo thread ---
+addf mux4.0 servo-thread
+addf mux4.1 servo-thread
+addf mux4.2 servo-thread
+
+# --- Pendant LED / power output ---
+setp hm2_7i96s.0.7i73.0.0.output-00 TRUE
+
+# --- Jog mode ---
+setp axis.x.jog-vel-mode 0
+setp axis.y.jog-vel-mode 0
+setp axis.z.jog-vel-mode 0
+
+# --- Encoder counts ---
+net mpg-counts <= hm2_7i96s.0.7i73.0.0.enc0.count
+net mpg-counts => axis.x.jog-counts
+net mpg-counts => axis.y.jog-counts
+net mpg-counts => axis.z.jog-counts
+
+# --- Axis selection switches ---
+net mpg-x-select <= hm2_7i96s.0.7i73.0.0.input-00
+net mpg-y-select <= hm2_7i96s.0.7i73.0.0.input-01
+net mpg-z-select <= hm2_7i96s.0.7i73.0.0.input-02
+
+net mpg-x-select => axis.x.jog-enable
+net mpg-y-select => axis.y.jog-enable
+net mpg-z-select => axis.z.jog-enable
+
+# --- Scale values for each mux input ---
+setp mux4.0.in0 0.0001   # X axis 1x (default if no knob)
+setp mux4.0.in1 0.001    # X axis 10x
+setp mux4.0.in2 0.01     # X axis 100x
+
+setp mux4.1.in0 0.0001   # Y axis 1x
+setp mux4.1.in1 0.001    # Y axis 10x
+setp mux4.1.in2 0.01     # Y axis 100x
+
+setp mux4.2.in0 0.0001   # Z axis 1x
+setp mux4.2.in1 0.001    # Z axis 10x
+setp mux4.2.in2 0.01     # Z axis 100x
+
+# --- Connect scale select pins to mux selects ---
+net scale-x10 <= hm2_7i96s.0.7i73.0.0.input-03
+net scale-x100 <= hm2_7i96s.0.7i73.0.0.input-04
+
+# Only sel0 and sel1 exist
+net scale-x10  => mux4.0.sel0
+net scale-x100 => mux4.0.sel1
+
+net scale-x10  => mux4.1.sel0
+net scale-x100 => mux4.1.sel1
+
+net scale-x10  => mux4.2.sel0
+net scale-x100 => mux4.2.sel1
+
+# --- Connect mux outputs to axis jog-scale directly ---
+net x-scale-net mux4.0.out => axis.x.jog-scale
+net y-scale-net mux4.1.out => axis.y.jog-scale
+net z-scale-net mux4.2.out => axis.z.jog-scale
+
+# --- Pendant E-stop ---
+net pendant-estop <= hm2_7i96s.0.7i73.0.0.input-07
+# net pendant-estop => iocontrol.0.emc-enable-in
+
