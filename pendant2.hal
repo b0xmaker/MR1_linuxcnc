@@ -40,7 +40,7 @@ setp mux4.1.in2 0.01     # Y axis 100x
 
 setp mux4.2.in0 0.0001   # Z axis 1x
 setp mux4.2.in1 0.001    # Z axis 10x
-setp mux4.2.in2 0.01     # Z axis 100x
+setp mux4.2.in2 0.005     # Z axis 100x
 
 # --- Connect scale select pins to mux selects ---
 net scale-x10 <= hm2_7i96s.0.7i73.0.0.input-03
